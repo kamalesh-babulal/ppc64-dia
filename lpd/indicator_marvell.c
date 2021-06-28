@@ -391,7 +391,9 @@ mv_indicator_list(struct loc_code **list, struct dev_vpd *vpd)
 	list_new->type = TYPE_MARVELL;
 	strncpy(list_new->code, vpd->location, LOCATION_LENGTH);  /* loc. code */
 	strncpy(list_new->devname, vpd->dev, DEV_LENGTH);   /* sdX device name */
-	snprintf(list_new->dev, DEV_LENGTH, "%s/resource5", path); /* PCI BAR5 */
+	strncpy(list_new->dev, path, DEV_LENGTH); /* PCI BAR5 */
+	strncat(list_new->dev, "/resources5", DEV_LENGTH - strlen(path));
+	list_new->dev[DEV_LENGTH - 1] = '\0';
 	list_new->index = (uint32_t)atoi(&ata_device[3]); /* use for ATA index */
 
 	dbg("Marvell HDD LED:");

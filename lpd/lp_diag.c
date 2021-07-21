@@ -299,7 +299,7 @@ build_callout_loc_code(struct sl_event *event, struct loc_code *list,
 				return NULL;
 			}
 
-			strncpy(fru->location, location, LOCATION_LENGTH - 1);
+			snprintf(fru->location, LOCATION_LENGTH, "%s", location);
 		}
 	}
 

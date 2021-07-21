@@ -297,7 +297,8 @@ ses_indicator_list(struct loc_code **list, struct dev_vpd *vpd)
 		}
 
 		/* fill loc_code structure */
-		strncpy(curr->code, vpd->location, LOCATION_LENGTH -1);
+		snprintf(curr->code, LOCATION_LENGTH, "%s", vpd->location);
+
 		if (strcmp(fru_loc, "-")) {	/* Components */
 			strncat(curr->code, "-",
 				LOCATION_LENGTH - strlen(curr->code) - 1);
@@ -308,7 +309,7 @@ ses_indicator_list(struct loc_code **list, struct dev_vpd *vpd)
 		curr->type = TYPE_SES;
 
 		/* We need to keep track of the sg device. */
-		strncpy(curr->dev, vpd->dev, DEV_LENGTH - 1);
+		snprintf(curr->dev, DEV_LENGTH, "%s", vpd->dev);
 
 		/* lsvpd does not provide vpd data for components like power
 		 * supply inside enclosure. Lets keep the display name.
@@ -319,7 +320,7 @@ ses_indicator_list(struct loc_code **list, struct dev_vpd *vpd)
 				log_msg("%s: Out of memory\n", __func__);
 				return -1;
 			}
-			strncpy(curr->ds, loc_desc, VPD_LENGTH - 1);
+			snprintf(curr->ds, VPD_LENGTH, "%s", loc_desc);
 			free(loc_desc);
 		}
 	}

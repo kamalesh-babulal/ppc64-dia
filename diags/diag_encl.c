@@ -158,8 +158,7 @@ make_prev_path(const char *encl_loc)
 		return;
 
 	memset(cmd_opts.prev_path, 0, path_len);
-	strncpy(cmd_opts.prev_path, DIAG_ENCL_PREV_PAGES_DIR,
-		strlen(DIAG_ENCL_PREV_PAGES_DIR));
+	snprintf(cmd_opts.prev_path, path_len, DIAG_ENCL_PREV_PAGES_DIR);
 
 	path_len -= strlen(DIAG_ENCL_PREV_PAGES_DIR);
 	strncat(cmd_opts.prev_path, encl_loc, path_len - 1);

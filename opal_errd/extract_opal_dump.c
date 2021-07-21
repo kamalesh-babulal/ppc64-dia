@@ -89,7 +89,8 @@ static void ack_dump(const char* dump_dir_path)
 	int fd;
 	int rc;
 
-	snprintf(ack_file, sizeof(ack_file), "%s/acknowledge", dump_dir_path);
+	snprintf(ack_file, PATH_MAX, "%s", dump_dir_path);
+	strncat(ack_file, "/acknowledge", PATH_MAX - (strlen(ack_file) + 1));
 
 	fd = open(ack_file, O_WRONLY);
 
@@ -229,7 +230,8 @@ static int process_dump(const char* dump_dir_path, const char *output_dir)
 	uint16_t prefix_size;
 	int rc;
 
-	snprintf(dump_path, sizeof(dump_path), "%s/dump", dump_dir_path);
+	snprintf(dump_path, PATH_MAX, "%s", dump_dir_path);
+	strncat(dump_path, "/dump", PATH_MAX - (strlen(dump_path) + 1));
 
 	if (stat(dump_path,&sbuf) == -1)
 		return -1;
@@ -354,8 +356,10 @@ static int find_and_process_dumps(const char *opal_dump_dir,
 			continue;
 		}
 
-		snprintf(dump_path, sizeof(dump_path), "%s/%s",
-			 opal_dump_dir, dirent->d_name);
+		snprintf(dump_path, PATH_MAX, "%s", opal_dump_dir);
+		strncat(dump_path, "/", PATH_MAX - (strlen(dump_path) + 1));
+		strncat(dump_path, dirent->d_name,
+				PATH_MAX - (strlen(dump_path) + 1));
 
 		is_dir = 0;
 

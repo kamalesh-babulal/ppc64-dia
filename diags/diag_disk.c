@@ -156,8 +156,8 @@ static inline void dir_sync(char * path)
 
 static int open_output_xml_file(const char *xml_filename)
 {
-	char filename[PATH_MAX];
-	int rc;
+	char *filename;
+	int rc, path_len;
 
 	rc = access(DISK_OUTPUT_PATH, W_OK);
 	if (rc) {
@@ -187,11 +187,23 @@ static int open_output_xml_file(const char *xml_filename)
 		dir_sync(DISK_OUTPUT_PATH);
 	}
 
+	/*
+	 * filename will not cross PATH_MAX. GCC keeps complaining about
+	 * it and it's right about writing more than PATH_MAX into filename.
+	 * We are working around, by allocating more than PATH_MAX to keep
+	 * GCC happy.
+	 */
+	path_len = (PATH_MAX + strlen(DISK_OUTPUT_PATH) + 1);
+	filename = malloc(path_len);
+	if (filename == NULL)
+		return -1;
 
-	snprintf(filename, sizeof(filename) - 1, "%s/%s",
+	snprintf(filename, path_len , "%s/%s",
 		 DISK_OUTPUT_PATH, xml_filename);
 
 	result_file = fopen(filename, "w");
+	free(filename);
+
 	if (!result_file)
 		return -1;
 
@@ -258,7 +270,12 @@ static int get_system_vpd(char *machine_serial,
 	 */
 	if (strlen(serial) > 5)
 		start_index = strlen(serial) - 5;
-	strncpy(machine_serial, serial + start_index, SERIAL_NUM_LEN);
+	/*
+	 * Trying to write 16, into 8 bytes string, makes GCC warns about it.
+	 * Using strcpy(), because we know the string length is 5.
+	 */
+	strcpy(machine_serial, serial + start_index);
+	machine_serial[SERIAL_NUM_LEN - 1] = '\0';
 
 	device_fd = open(DEVICE_TREE_MODEL, O_RDONLY);
 	if (device_fd < 0)
@@ -274,7 +291,7 @@ static int get_system_vpd(char *machine_serial,
 	if (strchr(model, ',') != NULL)
 		temp = strchr(model, ',') + 1;
 
-	strncpy(machine_type, temp, MACHINE_MODEL_LEN + 1);
+	snprintf(machine_type, MACHINE_MODEL_LEN + 1, "%s", temp);
 	*machine_model = strchr(machine_type, '-');
 	if (*machine_model == NULL) /* Failed to get model name */
 		return -1;

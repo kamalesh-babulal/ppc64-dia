@@ -1093,8 +1093,10 @@ int main(int argc, char *argv[])
 			if (rc > 0 && fds[UDEV_FD].revents) {
 				udev_dev = udev_monitor_receive_device(udev_mon);
 				devpath = udev_device_get_devpath(udev_dev);
-				if (devpath && strrchr(devpath, '/'))
-					strncpy(elog_str_name, strrchr(devpath, '/'), ELOG_STR_SIZE);
+				if (devpath && strrchr(devpath, '/')) {
+					snprintf(elog_str_name, ELOG_STR_SIZE,
+						       "%s", strrchr(devpath, '/'));
+				}
 				udev_device_unref(udev_dev);
 				/* The id of the elog should be in elog_str_name
 				 * Perhaps more can be done with the udev information

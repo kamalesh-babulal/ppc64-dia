@@ -192,8 +192,8 @@ static int write_log(char path[], int flag,
 	if (sz >= PATH_MAX)
 		return rc;
 
-	dump_path[PATH_MAX - 1] = '\0';
 	strncpy(dump_path, path, PATH_MAX - 1);
+	dump_path[PATH_MAX - 1] = '\0';
 
 	if (!flag) {
 		strncpy(dump_suffix,

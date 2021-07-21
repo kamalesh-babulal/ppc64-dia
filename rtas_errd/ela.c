@@ -2038,8 +2038,6 @@ sensor_epow(struct event *event, int error_type, int version)
 {
 	int class, token, index, redundancy, status;
 	struct event_description_pre_v6 *e_desc;
-	char sensor_name [256];
-	char fru_name[256];
 	int rc = 1;
 
 	class = error_type & 0xFF;
@@ -2062,58 +2060,52 @@ sensor_epow(struct event *event, int error_type, int version)
                         break;
 
                 case VOLT:
-			sprintf(fru_name, "%s", F_POWER_SUPPLY);
-			sprintf(sensor_name, F_EPOW_ONE, F_VOLT_SEN_2,
-				index + 1);
-
 			if (version == 3) {
 				e_desc = v3_errdscr;
 				e_desc->rcode = 0x30;
 			} else {
 				e_desc = volt_epow;
-				strncpy(e_desc->frus[0].fname, fru_name,
-								NAMESIZE - 1);
-				e_desc->frus[0].fname[NAMESIZE - 1] = '\0';
-				strncpy(e_desc->frus[1].fname, sensor_name,
-								NAMESIZE - 1);
-				e_desc->frus[1].fname[NAMESIZE - 1] = '\0';
+				/* fru name */
+				snprintf(e_desc->frus[0].fname, NAMESIZE,
+						"%s", F_POWER_SUPPLY);
+				/* sensor name */
+				snprintf(e_desc->frus[1].fname, NAMESIZE,
+						F_EPOW_ONE, F_VOLT_SEN_2,
+						index + 1);
+
 				e_desc->rcode = 0x831;
 			}
                         break;
 
                 case THERM:
-			sprintf(sensor_name, F_EPOW_ONE, F_THERM_SEN,
-				index + 1);
-
 			if (version == 3) {
 				e_desc = v3_errdscr;
 				e_desc->rcode = 0x50;
 			} else {
 				e_desc = therm_epow;
-				strncpy(e_desc->frus[0].fname, sensor_name,
-								NAMESIZE - 1);
-				e_desc->frus[0].fname[NAMESIZE - 1] = '\0';
+				/* sensor name */
+				snprintf(e_desc->frus[0].fname, NAMESIZE,
+						F_EPOW_ONE, F_THERM_SEN,
+						index + 1);
+
 				e_desc->rcode = 0x832;
 			}
 			break;
 
                 case POWER:
-			sprintf(fru_name, F_EPOW_ONE, F_POWER_SUPPLY,
-				index + 1);
-
-			sprintf(sensor_name, "%s", F_POW_SEN);
-
 			if (version == 3) {
 				e_desc = v3_errdscr;
 				e_desc->rcode = 0x70;
 			} else {
 				e_desc = pow_epow;
-				strncpy(e_desc->frus[0].fname, fru_name,
-								NAMESIZE - 1);
-				e_desc->frus[0].fname[NAMESIZE - 1] = '\0';
-				strncpy(e_desc->frus[1].fname, sensor_name,
-								NAMESIZE - 1);
-				e_desc->frus[1].fname[NAMESIZE - 1] = '\0';
+				/* fru name */
+				snprintf(e_desc->frus[0].fname, NAMESIZE,
+						F_EPOW_ONE, F_POWER_SUPPLY,
+						index + 1);
+				/* sensor name */
+				snprintf(e_desc->frus[1].fname, NAMESIZE,
+						"%s", F_POW_SEN);
+
 				e_desc->rcode = 0x833;
 			}
                         break;

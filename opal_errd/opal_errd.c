@@ -321,8 +321,10 @@ static void rename_old_logs(const char *output_dir)
 			continue;
 		}
 
-		snprintf(oldname, sizeof(oldname), "%s/%s",
-			 output_dir, dirent->d_name);
+		snprintf(oldname, PATH_MAX, "%s", output_dir);
+		strncat(oldname, "/", PATH_MAX - (strlen(oldname) + 1));
+		strncat(oldname, dirent->d_name,
+				PATH_MAX - (strlen(oldname) + 1));
 
 		elog_type = get_elog_type_from_file_data(oldname);
 		if (elog_type == OPAL_ELOG_INVALID) {
@@ -330,8 +332,10 @@ static void rename_old_logs(const char *output_dir)
 			continue; /* Delete the file here ? */
 		}
 
-		snprintf(newname, sizeof(newname), "%s-%s",
-			 oldname, ELOG_TYPE_STR(elog_type));
+		snprintf(newname, PATH_MAX, "%s", oldname);
+		strncat(newname, "-", PATH_MAX - (strlen(newname + 1)));
+		strncat(newname, ELOG_TYPE_STR(elog_type),
+				PATH_MAX - (strlen(newname) + 1));
 
 		if (rename(oldname, newname) < 0) {
 			syslog(LOG_WARNING, "Couldn't rename logfile %s to "
@@ -705,8 +709,10 @@ static int find_and_read_elog_events(const char *elog_dir, const char *output_pa
 			continue;
 		}
 
-		snprintf(elog_path, sizeof(elog_path), "%s/%s",
-			 elog_dir, dirent->d_name);
+		snprintf(elog_path, PATH_MAX, "%s", elog_dir);
+		strncat(elog_path, "/", PATH_MAX - (strlen(elog_path) + 1));
+		strncat(elog_path, dirent->d_name,
+				PATH_MAX - (strlen(elog_dir) + 1));
 
 		is_dir = 0;
 
